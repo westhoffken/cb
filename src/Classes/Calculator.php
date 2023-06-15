@@ -69,7 +69,16 @@ class Calculator
 
     private function squirt(int $key, string $command)
     {
-        // TODO: almost there! the match below does not like it when we have a single quit with nothing
+        // Het lijkt heel veel, maar ik wil graag in de som kijken op diepste nivuea of er nog ergens een ({getal}) stata
+        // wat tussenhaakjes staat en verder geen zaken erbij heeft. in dit geval kan ik de haakjes namelijk verwijderen
+        if (preg_match('/([*\/+-])\((\d+(\.\d+))\)/', $this->commands[$key], $cleanedUpSum)) {
+            dump($cleanedUpSum);
+            $this->commands[$key] = str_replace($cleanedUpSum[0], $cleanedUpSum[1] . $cleanedUpSum[2], $this->commands[$key]);
+        }
+        // TODO: change the order, the logic is in the place but the order sucks xD
+        $this->simpleSum($key, $this->commands[$key]);
+
+
         // so i need to figure that out
         // This is fun and all but yolo xD
         // SOmehow we need to keep track of the command we are working on and calculate stuff without sqrt
@@ -86,15 +95,8 @@ class Calculator
             dump('calculate:' . $squirt);
             // What we also need to do is remove ( and ) because it just became a sperate item
             $this->commands[$key] = str_replace($matches[0], $squirt, $this->commands[$key]);
-            dump($this->commands);
-            $this->simpleSum($key, $this->commands[$key]);
 
-            // Het lijkt heel veel, maar ik wil graag in de som kijken op diepste nivuea of er nog ergens een ({getal}) stata
-            // wat tussenhaakjes staat en verder geen zaken erbij heeft. in dit geval kan ik de haakjes namelijk verwijderen
-            if (preg_match('/([*\/+-])\((\d+(\.\d+))\)/', $this->commands[$key], $cleanedUpSum)) {
-                dump($cleanedUpSum);
-                $this->commands[$key] = str_replace($cleanedUpSum[0], $cleanedUpSum[1] . $cleanedUpSum[2], $this->commands[$key]);
-            }
+
             //Het ziet er misschien wat gek uit, maar bovenstaande regex rekent alle haakjes
             // Als matches 1,0 gebruik voor het uitlezen van een srt(*) operation dan krijg ik een haakje teveel mee
             // Om dat te voorkomen doe ik nog een extra filter en pas ik daar de som op toe
@@ -102,7 +104,7 @@ class Calculator
             $this->squirt($key, $this->commands[$key]);
         }
 
-
+        dump($this->commands);
         // so there is no more single squirt, now lets find all parenteheses and solve those
         die();
 
