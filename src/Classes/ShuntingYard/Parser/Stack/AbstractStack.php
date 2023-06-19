@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Classes\Parser\Stack;
+namespace App\Classes\ShuntingYard\Parser\Stack;
 
-use App\Classes\Lexer\Token;
+
+
+use App\Classes\ShuntingYard\Lexer\Token;
 
 class AbstractStack implements StackInterface
 {

@@ -2,10 +2,9 @@
 
 namespace App\Controller;
 
-use App\Classes\Calculator;
-use App\Classes\CommandParser;
-use App\Classes\Parser\Parser;
-use App\Classes\StandardOperations;
+
+use App\Classes\ShuntingYard\Parser\Parser;
+use App\Classes\ShuntingYard\Tokenizer\StandardOperations;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,10 +17,12 @@ class CalculateController
     {
         $operationsTokenizer = new StandardOperations();
         $parse = new Parser();
-        $tokens = $operationsTokenizer->tokenize('sin (max( 2,3 ) / 3 * pi)');
+
+
+        $tokens = $operationsTokenizer->tokenize('4+18/(9-3)');
         $parse->parse($tokens);
         dd($tokens);
-        return new JsonResponse(['response' => 'ok'], 200);
+
     }
 
 }

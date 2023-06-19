@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Classes\Parser\Stack;
+namespace App\Classes\ShuntingYard\Parser\Stack;
 
 
 /**
  * Helper class with some array method, specifically made this because "peek" is a very usefull method
  */
-class OperatorStack extends AbstractStack
+class OutputStack extends AbstractStack
 {
 
 

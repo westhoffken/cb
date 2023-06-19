@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Classes;
+namespace App\Classes\ShuntingYard\Tokenizer;
 
-use App\Classes\Lexer\Definition;
-use App\Classes\Lexer\Token;
+
+
+use App\Classes\ShuntingYard\Lexer\Definition;
+use App\Classes\ShuntingYard\Lexer\Token;
 
 class Tokenizer
 {

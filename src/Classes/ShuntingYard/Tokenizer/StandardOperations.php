@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Classes;
+namespace App\Classes\ShuntingYard\Tokenizer;
 
-use App\Classes\Lexer\Definition;
-use App\Classes\Lexer\Token;
-use App\Classes\Lexer\TokenType;
+
+
+
+use App\Classes\ShuntingYard\Lexer\Definition;
+use App\Classes\ShuntingYard\Lexer\TokenType;
 
 /**
- * We can directly call this class if we wish to make standard math operations
- * This class will also hold and add all our operations possible based on regexp patterns
+ * This gives us a standard math definitions to be used in our calculator.
  */
 class StandardOperations extends Tokenizer
 {

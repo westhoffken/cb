@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Classes\Parser;
+namespace App\Classes\ShuntingYard;
 
-use App\Classes\Lexer\Definition;
-use App\Classes\Lexer\Token;
-use App\Classes\Lexer\TokenType;
-use App\Classes\Parser\Stack\OperatorStack;
-use App\Classes\Parser\Stack\OutputStack;
+use App\Classes\ShuntingYard\Lexer\Definition;
+use App\Classes\ShuntingYard\Lexer\Token;
+use App\Classes\ShuntingYard\Lexer\TokenType;
+use App\Classes\ShuntingYard\Parser\Stack\OperatorStack;
+use App\Classes\ShuntingYard\Parser\Stack\OutputStack;
 
-
-class Parser
+class ShuntingYard
 {
-
     /**
      * @var Token[] $tokens
      */
@@ -27,32 +25,21 @@ class Parser
      */
     protected OutputStack $outputStack;
 
-    public function parse(array $tokens)
+    public function __construct(array $tokens)
     {
-
-        $this->outputStack = new OutputStack();
-        $this->operatorStack = new OperatorStack();
-
-        $tokens = $this->filterTokens($tokens);
-
         $this->tokens = $tokens;
-
-        $this->shuntingYard($tokens);
-
     }
 
     /**
-     * @param Token[] $tokens
-     * @return void
      * @throws \Exception
      */
-    private function shuntingYard(array $tokens)
+    public function shuntingYard(): OutputStack
     {
 
-        $nrOfTokens = count($tokens);
+        $nrOfTokens = count($this->tokens);
         for ($i = 0; $i < $nrOfTokens; $i++) {
             /** @var Token $token */
-            $token = $tokens[$i];
+            $token = $this->tokens[$i];
 
             dump('parsing token with operator: ' . $token->getMatch());
             //sqrt(50.50*50)
@@ -107,8 +94,9 @@ class Parser
 
             $this->outputStack->push($poppedToken);
         }
-        // TODO check for stack? we dont wish to calculate the sum yet
-        dd($this->outputStack);
+
+        return $this->outputStack;
+
     }
 
     /**
@@ -144,7 +132,10 @@ class Parser
             dump('precende is lower');
         }
         // To make sure right evaluated operators don't pop eachother out
-        if ($currentToken->getPrecedence() === $lastTokenInStack->getPrecedence() && $currentToken->getAssoctiotivity() !== Definition::RIGHT_ASOC) {
+        if (
+            $currentToken->getPrecedence() === $lastTokenInStack->getPrecedence() &&
+            $currentToken->getAssoctiotivity() !== Definition::RIGHT_ASOC
+        ) {
             dump('precende is same');
             return true;
         }
@@ -194,18 +185,5 @@ class Parser
             $this->outputStack->push($poppedToken);
         }
     }
-
-    protected function filterTokens(
-        array $tokens
-    ): array {
-        //Filter out any unwanted whitespaces
-        $filteredTokens = array_filter($tokens, static function (Token $t) {
-            return $t->getTokenType() !== TokenType::WHITESPACE;
-        });
-
-        // Return the array values only, because array_filter preserves the keys
-        return array_values($filteredTokens);
-    }
-
 
 }

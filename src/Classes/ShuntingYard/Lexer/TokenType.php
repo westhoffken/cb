@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Classes\Lexer;
+namespace App\Classes\ShuntingYard\Lexer;
 
 final class TokenType
 {
