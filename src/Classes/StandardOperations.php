@@ -57,6 +57,7 @@ class StandardOperations extends Tokenizer
 
         $this->add(new Definition('/abs/', TokenType::FUNCTION_NAME, 0));
         $this->add(new Definition('/sgn/', TokenType::FUNCTION_NAME, 0));
+        $this->add(new Definition('/pi/', TokenType::FUNCTION_NAME, 0));
 
         $this->add(new Definition('/\(/', TokenType::OPEN_PARENTHESIS, 0));
         $this->add(new Definition('/\)/', TokenType::CLOSE_PARENTHESIS, 0));
@@ -72,7 +73,7 @@ class StandardOperations extends Tokenizer
         $this->add(new Definition('/\!\!/', TokenType::SEMI_FACTORIAL_OPERATOR, 0));
         $this->add(new Definition('/\!/', TokenType::FACTORIAL_OPERATOR, 0));
 
-        $this->add(new Definition('/pi/', TokenType::CONSTANT, 0));
+
         $this->add(new Definition('/e/', TokenType::CONSTANT, 0));
         $this->add(new Definition('/NAN/', TokenType::CONSTANT, 0));
         $this->add(new Definition('/INF/', TokenType::CONSTANT, 0));

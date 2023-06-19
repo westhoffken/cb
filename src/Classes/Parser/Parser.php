@@ -169,7 +169,7 @@ class Parser
             if ($poppedToken->getTokenType() === TokenType::OPEN_PARENTHESIS) {
                 dump('found matching opening');
                 $cleanSum = true;
-
+                //TODO:  We need to check if there is a function name before this to make sure we pop the function
 //                $this->operatorStack->pop();
                 break;
             }
@@ -180,12 +180,19 @@ class Parser
 
             // should be all done now since we will write an evaluater later on and calculate properly
         }
-
+        // Mismatching parentheses are a bitch
         if (!$cleanSum) {
-            dd($this->operatorStack, $this->outputStack);
             throw new \Exception('Mismatching parentheses');
         }
 
+        // We need to make sure we don't handle a ( without the proper function that goes along with it
+        // To prevent this we pop the function if the previous token in the current operator start is a function name
+        // for example: max ( should pop '(' and 'max' to make the notation right
+        $previous = $this->operatorStack->peek();
+        if ($previous && $previous->getTokenType() === TokenType::FUNCTION_NAME) {
+            $poppedToken = $this->operatorStack->pop();
+            $this->outputStack->push($poppedToken);
+        }
     }
 
     protected function filterTokens(
