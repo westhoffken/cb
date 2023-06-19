@@ -18,7 +18,7 @@ class CalculateController
     {
         $operationsTokenizer = new StandardOperations();
         $parse = new Parser();
-        $tokens = $operationsTokenizer->tokenize('sqrt(50.50* 50)');
+        $tokens = $operationsTokenizer->tokenize('sin (max( 2,3 ) / 3 * pi)');
         $parse->parse($tokens);
         dd($tokens);
         return new JsonResponse(['response' => 'ok'], 200);
