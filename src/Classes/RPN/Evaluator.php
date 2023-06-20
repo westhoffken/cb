@@ -6,7 +6,13 @@ use App\Classes\RPN\Stack\ResultStack;
 use App\Classes\ShuntingYard\Lexer\Token;
 use App\Classes\ShuntingYard\Lexer\TokenType;
 use App\Classes\Stack\OutputStack;
+use App\Exception\MalformedSumException;
+use App\Exception\NoSumException;
+use App\Exception\NotImplementedException;
 
+/**
+ * Basic class that performs the actuall calculation
+ */
 class Evaluator
 {
 
@@ -30,14 +36,21 @@ class Evaluator
         $this->resultStack = new ResultStack();
     }
 
-    //Returns the evaluated sum and thus the answer
+    /**
+     * Evaluates the output stack and does some math
+     * @return float
+     * @throws MalformedSumException
+     * @throws NoSumException
+     * @throws NotImplementedException
+     */
     public function evaluate()
     {
-
+        // forloop because im not directly working with an array
+        // Could implement a toArray() method but this works just as fine
         for ($i = 0; $i < $this->outputStack->length(); $i++) {
 
             $token = $this->outputStack->showAtIndex($i);
-            dump('Parsing token: ', $token);
+
             // If it concerns a number token type we push it to the stack until we encounter function or operator
             if (in_array(
                 $token->getTokenType(),
@@ -45,9 +58,9 @@ class Evaluator
                 true
             )
             ) {
-                // push to stack!
+                // Numbers always get pushed
                 $this->resultStack->push($token->getValue());
-                dump('encountered number token: ', $this->resultStack);
+
             } elseif (
                 in_array(
                     $token->getTokenType(),
@@ -61,47 +74,48 @@ class Evaluator
                     true
                 )
             ) {
+                // Non numbers need to be pushed as well, but we also calculate them against the last 2
+                // numbers on the stack
+
+
                 // we need two numbers to perform an operations against, lets make sure there are 2
                 if ($this->resultStack->length() <= 1) {
-                    dd($this->resultStack);
-                    throw new \Exception('Malformed sum, cannot perform RPN');
+                    throw new MalformedSumException('Malformed sum, cannot perform RPN');
                 }
-                dump('operator token, calculating');
 
                 $this->handleCalculation($token);
-//                dump('After : ', $this->resultStack);
 
             } elseif ($token->getTokenType() === TokenType::FUNCTION_NAME) {
-//                dump('Handling func. calc.');
+                // Handle any math functions according
                 $this->handleFunctionCalculation($token);
-//                dump('After func.: ', $this->resultStack);
             }
         }
+
+        // The result stack should only have 1 result left and thats the calculated sy
         if ($this->resultStack->length() !== 1) {
-            throw new \Exception('Sum could not be calculated properly ');
+            throw new NoSumException('Sum could not be calculated properly ');
         }
-//        dd($this->resultStack->getResult());
+
         return $this->resultStack->getResult();
     }
 
     /**
+     * This only houses a few basic math function because i have little time to implement all!
      * @param Token $token
      * @return void
+     * @throws NotImplementedException
      */
     private function handleFunctionCalculation(Token $token): void
     {
-//        dump('simple cacl', $this->resultStack);
+        // TODO: add more mathemtical functions
         $number1 = $this->resultStack->pop();
 
         switch ($token->getMatch()) {
             case 'sqrt':
-
                 $result = sqrt($number1);
-//                dump('Result: ' . $result);
                 $this->resultStack->push($result);
                 break;
             case 'sin':
-
                 // Calculator doesn't take degrees or radiants, so we convert it, so it calculates properly
                 $result = sin(deg2rad($number1));
                 $this->resultStack->push($result);
@@ -114,11 +128,9 @@ class Evaluator
                 $this->resultStack->push($result);
                 break;
             default:
-                // error
-                break;
+                throw new NotImplementedException('Math function is not implemented yet');
         }
 
-//        dump($this->resultStack);  $number1 = $this->resultStack->pop();
     }
 
     /**
@@ -128,9 +140,9 @@ class Evaluator
     private function handleCalculation(Token $token): void
     {
         $number1 = $this->resultStack->pop();
-        dump('Number stack: ', $this->resultStack);
+
         $number2 = $this->resultStack->pop();
-        dump('calucalting: ' . $number1 . ' and ' . $number2);
+
 
         switch ($token->getTokenType()) {
             case TokenType::SUBTRACTION_OPERATOR:
@@ -144,6 +156,7 @@ class Evaluator
                 $this->resultStack->push($result);
                 break;
             case TokenType::DIVISION_OPERATOR:
+                // Let's keept it real, this is just... don't do it
                 if ($number2 === 0) {
                     throw new \DivisionByZeroError();
                 }
@@ -162,8 +175,9 @@ class Evaluator
                 $this->resultStack->push($result);
                 break;
             default:
-                // do nothing
-                break;
+                // I don't expect to ever reach here, but just in case
+                throw new NotImplementedException('Operator not implemented');
+
         }
     }
 

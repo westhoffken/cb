@@ -3,7 +3,6 @@
 namespace App\Classes\ShuntingYard\Tokenizer;
 
 
-
 use App\Classes\ShuntingYard\Lexer\Definition;
 use App\Classes\ShuntingYard\Lexer\Token;
 
@@ -38,6 +37,9 @@ class Tokenizer
 
         $currentIndex = 0;
 
+        // Loops through the whole string and will try to find a token in it
+        // When the token is found it will make a Token and move the index on for the length of the found token
+        // Above will make it, so we can never handle the same part of the string twice
         while ($currentIndex < strlen($input)) {
             // keep find only wat we haven't processed yet
             $token = $this->findToken(substr($input, $currentIndex));
@@ -62,6 +64,7 @@ class Tokenizer
      */
     private function findToken(string $input): ?Token
     {
+        // Lets find out of theres any definition and finalize the token creation
         foreach ($this->definitions as $definition) {
             $token = $definition->match($input);
             if ($token) {

@@ -3,18 +3,24 @@
 namespace App\Classes\ShuntingYard\Tokenizer;
 
 
-
-
 use App\Classes\ShuntingYard\Lexer\Definition;
 use App\Classes\ShuntingYard\Lexer\TokenType;
 
 /**
- * This gives us a standard math definitions to be used in our calculator.
+ * This class defines our math operators.
+ * Have to admit i have not implemented them all, but it should give you a general idea about the possibilities
  */
 class StandardOperations extends Tokenizer
 {
     public function __construct()
     {
+        /**
+         * The shunting yard gives precendece to its operators, some operators need to be popped before others and this is
+         * how shunting yard handles that !
+         * Everything else always has lower precende then the operators and will never be popped in favour of
+         */
+
+        // TODO: this regex does not perform very well with 50,50 and prefers 50.50 for some reason
         $this->add(new Definition('/\d+[,\.]\d+(e[+-]?\d+)?/', TokenType::REAL_NUMBER, 0));
 
         $this->add(new Definition('/\d+/', TokenType::POS_INT, 0));

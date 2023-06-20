@@ -3,7 +3,7 @@
 namespace App\Classes\ShuntingYard\Lexer;
 
 /**
- *
+ * Houses all the data I need to process the numbers, functions and operators
  */
 class Token
 {

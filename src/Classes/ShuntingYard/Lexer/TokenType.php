@@ -2,6 +2,9 @@
 
 namespace App\Classes\ShuntingYard\Lexer;
 
+/**
+ * This class is used to math in the shunting yard class
+ */
 final class TokenType
 {
 

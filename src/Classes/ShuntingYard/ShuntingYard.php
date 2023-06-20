@@ -34,76 +34,75 @@ class ShuntingYard
     }
 
     /**
+     * I have to admit it is not as pretty as i want it, but it gets the job done
      * @throws \Exception
      */
     public function shuntingYard(): OutputStack
     {
+        // loop through all tokens and handle them accordingly
+        foreach ($this->tokens as $token) {
 
-        $nrOfTokens = count($this->tokens);
-        for ($i = 0; $i < $nrOfTokens; $i++) {
-            /** @var Token $token */
-            $token = $this->tokens[$i];
 
-//            dump('parsing token with operator: ' . $token->getMatch());
-            //sqrt(50.50*50)
-            // soeprator stack sqrt ( * )
-            // output stack 50.05  50 *
             if ($token->getTokenType() === TokenType::CLOSE_PARENTHESIS) {
-//                dump('Found closing operator, handling sub expression');
                 // when you find a closing parentheses we pop until we find the opening and continue
-                // And always discard the parentheses
-//                dump('stack before pop: ', $this->operatorStack);
+                // And always discard the parentheses because shunting yard means to eleminate parentheses
                 $this->handleSubExpression();
-//                dump('stack after pop: ', $this->operatorStack, $this->outputStack);
+
             } elseif (
                 $token->getTokenType() === TokenType::OPEN_PARENTHESIS ||
                 $token->getTokenType() === TokenType::FUNCTION_NAME
             ) {
+                // an opening '(' means we eitehr have a new function or a new expression to be handles
+                // Always push to the stack
                 $this->operatorStack->push($token);
-//                dump('token is open or function, pushing to operator stack', $this->operatorStack);
-            } else {
-                if (
-                    !in_array(
-                        $token->getTokenType(),
-                        [TokenType::REAL_NUMBER, TokenType::POS_INT, TokenType::INTEGER],
-                        true
-                    )
-                ) {
-                    if ($this->lowerPrecendeThan($token, $this->operatorStack->peek())) {
 
-                        $poppedToken = $this->operatorStack->pop();
-//                        dump('Popped token', $poppedToken->getMatch());
+            } elseif (
+                !in_array(
+                    $token->getTokenType(),
+                    [TokenType::REAL_NUMBER, TokenType::POS_INT, TokenType::INTEGER],
+                    true
+                )
+            ) {
+                // token is not a number and should be processed according to the laws of anything that is not a token
+                if ($this->lowerPrecendeThan($token, $this->operatorStack->peek())) {
 
-                        $this->outputStack->push($poppedToken);
-//                        dump('pushed to output stack', $this->outputStack);
-                    }
-                    $this->operatorStack->push($token);
-//                    dump('Token not in number array, poushing to operator stack', $this->operatorStack);
+                    // precende tells us that the token needs to be popped from the operator stack
+                    // and needs to be added to the output stack
+                    $poppedToken = $this->operatorStack->pop();
+                    $this->outputStack->push($poppedToken);
 
-
-                } else {
-                    $this->outputStack->push($token);
-//                    dump('Regular number, pushting to output stack', $this->outputStack);
                 }
-
-
+                // after handling the precende and comparing with the last item in the stack
+                // we still need to add the token to the operator stack
+                $this->operatorStack->push($token);
+            } else {
+                // Anything else will just be pushed to the stack
+                $this->outputStack->push($token);
             }
 
         }
 
 
-        // Process any remaining operators
-        while (!$this->operatorStack->isEmpty()) {
-            $poppedToken = $this->operatorStack->pop();
+        $this->processRemainingStack();
 
-            $this->outputStack->push($poppedToken);
-        }
-//        dd($this->outputStack);
         return $this->outputStack;
 
     }
 
     /**
+     * @return void
+     */
+    private function processRemainingStack(): void
+    {
+        // Process any remaining operators and put them in the output stack
+        while (!$this->operatorStack->isEmpty()) {
+            $poppedToken = $this->operatorStack->pop();
+            $this->outputStack->push($poppedToken);
+        }
+    }
+
+    /**
+     * Precende according to the rules of shunting yard
      * @param Token $currentToken
      * @param Token|null $lastTokenInStack
      * @return bool
@@ -113,39 +112,20 @@ class ShuntingYard
         ?Token $lastTokenInStack = null
     ): bool {
 
-        // TODO: combine all ifs
-//        dump('checking lower precedence :' . $currentToken->getMatch() . ' vs ' . ($lastTokenInStack ? $lastTokenInStack->getMatch() : ''));
-        if (!$lastTokenInStack) {
-//            dump('no last token set, false');
-            return false;
-        }
-//        // This always comes first to make sure ^ is evaluated correctly
-//        if ($currentToken->getAssoctiotivity() === Definition::RIGHT_ASOC) {
-//            dump('RIGHT ASOC');
-//            return true;
-//        }
+        // These if's could be combined a bit more, but in my opinion that affects the readability
 
-        if ($currentToken->getPrecedence() > $lastTokenInStack->getPrecedence()) {
-//            dump('precende is higher');
+        if (!$lastTokenInStack || $currentToken->getPrecedence() > $lastTokenInStack->getPrecedence()) {
             return false;
         }
-        if (
-            $currentToken->getPrecedence() < $lastTokenInStack->getPrecedence()
-        ) {
-//            dump('Top of stack has higher precedence: ', $lastTokenInStack->getValue() . ' - ' . $currentToken->getValue());
-            return true;
-        }
+
         // To make sure right evaluated operators don't pop eachother out
         if (
-//            $currentToken->getPrecedence() === $lastTokenInStack->getPrecedence() &&
+            $currentToken->getPrecedence() < $lastTokenInStack->getPrecedence() ||
             $currentToken->getAssoctiotivity() !== Definition::RIGHT_ASOC
         ) {
-//            dump('precende is same');
             return true;
         }
 
-
-//        dump('nothing found');
         return false;
 
     }

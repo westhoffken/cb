@@ -2,13 +2,21 @@
 
 namespace App\Classes\ShuntingYard\Lexer;
 
+use App\Exception\MalformedSumException;
+
 /**
- *
+ * Class for matching definitions
  */
 class Definition
 {
+    /**
+     *
+     */
     public const LEFT_ASOC = 'left';
 
+    /**
+     *
+     */
     public const RIGHT_ASOC = 'right';
     /**
      * @var string
@@ -19,7 +27,13 @@ class Definition
      * @var string| null
      */
     private ?string $value;
+    /**
+     * @var int
+     */
     private int $tokenType;
+    /**
+     * @var int
+     */
     private int $precedence;
     /**
      * @var string
@@ -50,10 +64,12 @@ class Definition
      */
     public function match(string $input): ?Token
     {
+        // Match any characters and lets gooooo
         $matchedResult = preg_match($this->patternForToken, $input, $matches, PREG_OFFSET_CAPTURE);
 
         if ($matchedResult === false) {
-            throw new \Exception('Malformed sum');
+
+            throw new MalformedSumException('Malformed sum');
         }
 
         if ($matchedResult === 0) {
@@ -64,6 +80,10 @@ class Definition
         return $this->convertMatchToToken($matches[0]);
     }
 
+    /**
+     * @param $match
+     * @return Token|null
+     */
     private function convertMatchToToken($match): ?Token
     {
         $value = $match[0];
@@ -72,7 +92,7 @@ class Definition
         if ($match[1] !== 0) {
             return null;
         }
-
+        // Sometimes there can be a custom value for a function and this way we can handle that
         if ($this->value) {
             $value = $this->value;
         }
