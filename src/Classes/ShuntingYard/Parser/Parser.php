@@ -5,9 +5,9 @@ namespace App\Classes\ShuntingYard\Parser;
 
 use App\Classes\ShuntingYard\Lexer\Token;
 use App\Classes\ShuntingYard\Lexer\TokenType;
-use App\Classes\ShuntingYard\Parser\Stack\OperatorStack;
-use App\Classes\ShuntingYard\Parser\Stack\OutputStack;
 use App\Classes\ShuntingYard\ShuntingYard;
+use App\Classes\Stack\OperatorStack;
+use App\Classes\Stack\OutputStack;
 
 class Parser
 {
@@ -30,17 +30,13 @@ class Parser
     public function parse(array $tokens)
     {
 
-        $this->outputStack = new OutputStack();
-        $this->operatorStack = new OperatorStack();
 
         $tokens = $this->filterTokens($tokens);
 
         $this->tokens = $tokens;
-        $sy = new ShuntingYard($tokens);
-//        $this->shuntingYard($tokens);
+        return (new ShuntingYard($tokens))->shuntingYard();
 
     }
-
 
 
     protected function filterTokens(

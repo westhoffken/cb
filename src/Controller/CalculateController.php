@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 
+use App\Classes\RPN\Evaluator;
 use App\Classes\ShuntingYard\Parser\Parser;
 use App\Classes\ShuntingYard\Tokenizer\StandardOperations;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,9 +20,9 @@ class CalculateController
         $parse = new Parser();
 
 
-        $tokens = $operationsTokenizer->tokenize('4+18/(9-3)');
-        $parse->parse($tokens);
-        dd($tokens);
+        $tokens = $operationsTokenizer->tokenize('sin( 50 / 3)');
+        $resutlStack = (new Evaluator($parse->parse($tokens)))->evaluate();
+        dd($resutlStack);
 
     }
 

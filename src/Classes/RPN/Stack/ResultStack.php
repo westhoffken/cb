@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Classes\ShuntingYard\Parser\Stack;
-
+namespace App\Classes\RPN\Stack;
 
 
 use App\Classes\ShuntingYard\Lexer\Token;
 
-class AbstractStack implements StackInterface
+/**
+ * This stack will help us calculate the sum of the RNP expresion and help us solve the sum
+ */
+class ResultStack
 {
 
     /**
-     * @var Token[] $tokens
+     * @var array<float> $tokens
      */
     protected array $tokens = [];
 
     /**
-     * @param Token|null $element
+     * @param float|null $element
      * @return void
      */
-    public function push(?Token $element): void
+    public function push(?float $element): void
     {
         if ($element) {
             $this->tokens[] = $element;
@@ -29,7 +31,7 @@ class AbstractStack implements StackInterface
     /**
      * @return Token|null
      */
-    public function peek(): ?Token
+    public function peek(): ?float
     {
         $end = end($this->tokens);
         if (!$end) {
@@ -39,9 +41,9 @@ class AbstractStack implements StackInterface
     }
 
     /**
-     * @return Token|null
+     * @return float|null
      */
-    public function pop(): ?Token
+    public function pop(): ?float
     {
         return array_pop($this->tokens);
     }
@@ -62,4 +64,8 @@ class AbstractStack implements StackInterface
         return $this->length() === 0;
     }
 
+    public function getResult()
+    {
+        return $this->tokens[0];
+    }
 }

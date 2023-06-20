@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Classes\ShuntingYard\Parser\Stack;
+namespace App\Classes\Stack;
 
 
 use App\Classes\ShuntingYard\Lexer\Token;

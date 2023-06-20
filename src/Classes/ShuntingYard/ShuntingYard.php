@@ -5,8 +5,8 @@ namespace App\Classes\ShuntingYard;
 use App\Classes\ShuntingYard\Lexer\Definition;
 use App\Classes\ShuntingYard\Lexer\Token;
 use App\Classes\ShuntingYard\Lexer\TokenType;
-use App\Classes\ShuntingYard\Parser\Stack\OperatorStack;
-use App\Classes\ShuntingYard\Parser\Stack\OutputStack;
+use App\Classes\Stack\OperatorStack;
+use App\Classes\Stack\OutputStack;
 
 class ShuntingYard
 {
@@ -28,6 +28,9 @@ class ShuntingYard
     public function __construct(array $tokens)
     {
         $this->tokens = $tokens;
+        $this->outputStack = new OutputStack();
+        $this->operatorStack = new OperatorStack();
+
     }
 
     /**
@@ -41,12 +44,12 @@ class ShuntingYard
             /** @var Token $token */
             $token = $this->tokens[$i];
 
-            dump('parsing token with operator: ' . $token->getMatch());
+//            dump('parsing token with operator: ' . $token->getMatch());
             //sqrt(50.50*50)
             // soeprator stack sqrt ( * )
             // output stack 50.05  50 *
             if ($token->getTokenType() === TokenType::CLOSE_PARENTHESIS) {
-                dump('Found closing operator, handling sub expression');
+//                dump('Found closing operator, handling sub expression');
                 // when you find a closing parentheses we pop until we find the opening and continue
                 // And always discard the parentheses
                 $this->handleSubExpression();
@@ -56,7 +59,7 @@ class ShuntingYard
                 $token->getTokenType() === TokenType::FUNCTION_NAME
             ) {
                 $this->operatorStack->push($token);
-                dump('token is open or function, pushing to operator stack', $this->operatorStack);
+//                dump('token is open or function, pushing to operator stack', $this->operatorStack);
             } else {
                 if (
                     !in_array(
@@ -68,18 +71,18 @@ class ShuntingYard
                     if ($this->lowerPrecendeThan($token, $this->operatorStack->peek())) {
 
                         $poppedToken = $this->operatorStack->pop();
-                        dump('Popped token', $poppedToken->getMatch());
+//                        dump('Popped token', $poppedToken->getMatch());
 
                         $this->outputStack->push($poppedToken);
-                        dump('pushed to output stack', $this->outputStack);
+//                        dump('pushed to output stack', $this->outputStack);
                     }
                     $this->operatorStack->push($token);
-                    dump('Token not in number array, poushing to operator stack', $this->operatorStack);
+//                    dump('Token not in number array, poushing to operator stack', $this->operatorStack);
 
 
                 } else {
                     $this->outputStack->push($token);
-                    dump('Regular number, pushting to output stack', $this->outputStack);
+//                    dump('Regular number, pushting to output stack', $this->outputStack);
                 }
 
 
@@ -94,7 +97,7 @@ class ShuntingYard
 
             $this->outputStack->push($poppedToken);
         }
-
+        dump($this->outputStack);
         return $this->outputStack;
 
     }
@@ -110,9 +113,9 @@ class ShuntingYard
     ): bool {
 
         // TODO: combine all ifs
-        dump('checking lower precedence :' . ($lastTokenInStack ? $lastTokenInStack->getMatch() : ''));
+//        dump('checking lower precedence :' . ($lastTokenInStack ? $lastTokenInStack->getMatch() : ''));
         if (!$lastTokenInStack) {
-            dump('no last token set, false');
+//            dump('no last token set, false');
             return false;
         }
 //        // This always comes first to make sure ^ is evaluated correctly
@@ -122,26 +125,26 @@ class ShuntingYard
 //        }
 
         if ($currentToken->getPrecedence() > $lastTokenInStack->getPrecedence()) {
-            dump('precende is higher');
+//            dump('precende is higher');
             return false;
         }
 
         if (
             $currentToken->getPrecedence() < $lastTokenInStack->getPrecedence()
         ) {
-            dump('precende is lower');
+//            dump('precende is lower');
         }
         // To make sure right evaluated operators don't pop eachother out
         if (
             $currentToken->getPrecedence() === $lastTokenInStack->getPrecedence() &&
             $currentToken->getAssoctiotivity() !== Definition::RIGHT_ASOC
         ) {
-            dump('precende is same');
+//            dump('precende is same');
             return true;
         }
 
 
-        dump('nothing found');
+//        dump('nothing found');
         return false;
 
     }
@@ -156,15 +159,15 @@ class ShuntingYard
         $cleanSum = false;
 
         while ($poppedToken = $this->operatorStack->pop()) {
-            dump('Parsing token until we find opening: ' . $poppedToken->getMatch());
+//            dump('Parsing token until we find opening: ' . $poppedToken->getMatch());
             if ($poppedToken->getTokenType() === TokenType::OPEN_PARENTHESIS) {
-                dump('found matching opening');
+//                dump('found matching opening');
                 $cleanSum = true;
                 //TODO:  We need to check if there is a function name before this to make sure we pop the function
 //                $this->operatorStack->pop();
                 break;
             }
-            dump('popped token', $poppedToken);
+//            dump('popped token', $poppedToken);
 
             $this->outputStack->push($poppedToken);
 
