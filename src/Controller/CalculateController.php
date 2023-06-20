@@ -67,12 +67,12 @@ class CalculateController
             $resultStack = (new Evaluator($parse->parse($tokens)))->evaluate();
 
             // frontend accepts JSON, because why not
-            return new JsonResponse($resultStack);
+            return new JsonResponse(['result' => $resultStack], 200);
         } catch (\Exception $e) {
             // Why not specific exceptions?
             // we only wish to return the message and all custom exceptiosn extend from exception
             // Less code and a little less performance maybe
-            return new JsonResponse($e->getMessage());
+            return new JsonResponse(['result' => $e->getMessage()], 422);
         }
 
 
