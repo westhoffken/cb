@@ -38,12 +38,14 @@ class Evaluator
 
     /**
      * Evaluates the output stack and does some math
+     * always return as float even if it is not a float. this is tp prevent and dumb rounding shit
+     * if the application accidentally casts to int when it is a float
      * @return float
      * @throws MalformedSumException
      * @throws NoSumException
      * @throws NotImplementedException
      */
-    public function evaluate()
+    public function evaluate(): float
     {
         // forloop because im not directly working with an array
         // Could implement a toArray() method but this works just as fine

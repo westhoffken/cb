@@ -6,6 +6,9 @@ namespace App\Controller;
 use App\Classes\RPN\Evaluator;
 use App\Classes\ShuntingYard\Parser\Parser;
 use App\Classes\ShuntingYard\Tokenizer\StandardOperations;
+use App\Exception\MalformedSumException;
+use App\Exception\NoSumException;
+use App\Exception\NotImplementedException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -50,16 +53,28 @@ class CalculateController
         $operationsTokenizer = new StandardOperations();
         $parse = new Parser();
 
-        //below a few example sums I tried this code with
+        //below a few example sums I tried this code with, feel free tro try
         // sin (50/3)
-        //sqrt(50.50*(sqrt(50 * sqrt(50))*50+50-20))
-        //3 + 4 * 2 / (1 - 5) ^ 2
-        //4+18/(9−3)
-        $tokens = $operationsTokenizer->tokenize('sqrt(50.50*(sqrt(50 * sqrt(50))*50+50-20))');
-        $resultStack = (new Evaluator($parse->parse($tokens)))->evaluate();
+        // sqrt(50.50*(sqrt(50 * sqrt(50))*50+50-20))
+        // 3 + 4 * 2 / (1 - 5) ^ 2
+        // 4+18/(9−3)
 
-        // frontend accepts JSON, because why not
-        return new JsonResponse($resultStack);
+        // Map json data to standerd object of php
+        // Could have been a bit cleaner and made a requestParse that parses this specific objects
+        $requestData = json_decode($request->getContent(), false, 512, JSON_THROW_ON_ERROR);
+        try {
+            $tokens = $operationsTokenizer->tokenize($requestData->sum);
+            $resultStack = (new Evaluator($parse->parse($tokens)))->evaluate();
+
+            // frontend accepts JSON, because why not
+            return new JsonResponse($resultStack);
+        } catch (\Exception $e) {
+            // Why not specific exceptions?
+            // we only wish to return the message and all custom exceptiosn extend from exception
+            // Less code and a little less performance maybe
+            return new JsonResponse($e->getMessage());
+        }
+
 
     }
 
