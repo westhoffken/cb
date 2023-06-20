@@ -52,8 +52,9 @@ class ShuntingYard
 //                dump('Found closing operator, handling sub expression');
                 // when you find a closing parentheses we pop until we find the opening and continue
                 // And always discard the parentheses
+//                dump('stack before pop: ', $this->operatorStack);
                 $this->handleSubExpression();
-//                dd('testing', $token);
+//                dump('stack after pop: ', $this->operatorStack, $this->outputStack);
             } elseif (
                 $token->getTokenType() === TokenType::OPEN_PARENTHESIS ||
                 $token->getTokenType() === TokenType::FUNCTION_NAME
@@ -97,7 +98,7 @@ class ShuntingYard
 
             $this->outputStack->push($poppedToken);
         }
-        dump($this->outputStack);
+//        dd($this->outputStack);
         return $this->outputStack;
 
     }
@@ -113,7 +114,7 @@ class ShuntingYard
     ): bool {
 
         // TODO: combine all ifs
-//        dump('checking lower precedence :' . ($lastTokenInStack ? $lastTokenInStack->getMatch() : ''));
+//        dump('checking lower precedence :' . $currentToken->getMatch() . ' vs ' . ($lastTokenInStack ? $lastTokenInStack->getMatch() : ''));
         if (!$lastTokenInStack) {
 //            dump('no last token set, false');
             return false;
@@ -128,15 +129,15 @@ class ShuntingYard
 //            dump('precende is higher');
             return false;
         }
-
         if (
             $currentToken->getPrecedence() < $lastTokenInStack->getPrecedence()
         ) {
-//            dump('precende is lower');
+//            dump('Top of stack has higher precedence: ', $lastTokenInStack->getValue() . ' - ' . $currentToken->getValue());
+            return true;
         }
         // To make sure right evaluated operators don't pop eachother out
         if (
-            $currentToken->getPrecedence() === $lastTokenInStack->getPrecedence() &&
+//            $currentToken->getPrecedence() === $lastTokenInStack->getPrecedence() &&
             $currentToken->getAssoctiotivity() !== Definition::RIGHT_ASOC
         ) {
 //            dump('precende is same');
@@ -163,11 +164,9 @@ class ShuntingYard
             if ($poppedToken->getTokenType() === TokenType::OPEN_PARENTHESIS) {
 //                dump('found matching opening');
                 $cleanSum = true;
-                //TODO:  We need to check if there is a function name before this to make sure we pop the function
-//                $this->operatorStack->pop();
+
                 break;
             }
-//            dump('popped token', $poppedToken);
 
             $this->outputStack->push($poppedToken);
 

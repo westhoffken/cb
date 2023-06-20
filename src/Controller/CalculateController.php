@@ -19,10 +19,15 @@ class CalculateController
         $operationsTokenizer = new StandardOperations();
         $parse = new Parser();
 
+        //below a few example sums I tried this code with
+        // sin (50/3)
+        //sqrt(50.50*(sqrt(50 * sqrt(50))*50+50-20))
+        //3 + 4 * 2 / (1 - 5) ^ 2
+        //4+18/(9−3)
+        $tokens = $operationsTokenizer->tokenize('3 + 4 * 2 / (1 - 5) ^ 2');
+        $resultStack = (new Evaluator($parse->parse($tokens)))->evaluate();
 
-        $tokens = $operationsTokenizer->tokenize('sin( 50 / 3)');
-        $resutlStack = (new Evaluator($parse->parse($tokens)))->evaluate();
-        dd($resutlStack);
+        return new JsonResponse($resultStack);
 
     }
 

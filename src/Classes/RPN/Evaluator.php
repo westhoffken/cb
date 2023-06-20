@@ -63,21 +63,24 @@ class Evaluator
             ) {
                 // we need two numbers to perform an operations against, lets make sure there are 2
                 if ($this->resultStack->length() <= 1) {
+                    dd($this->resultStack);
                     throw new \Exception('Malformed sum, cannot perform RPN');
                 }
                 dump('operator token, calculating');
 
                 $this->handleCalculation($token);
-
+//                dump('After : ', $this->resultStack);
 
             } elseif ($token->getTokenType() === TokenType::FUNCTION_NAME) {
-
+//                dump('Handling func. calc.');
                 $this->handleFunctionCalculation($token);
+//                dump('After func.: ', $this->resultStack);
             }
         }
         if ($this->resultStack->length() !== 1) {
             throw new \Exception('Sum could not be calculated properly ');
         }
+//        dd($this->resultStack->getResult());
         return $this->resultStack->getResult();
     }
 
@@ -87,22 +90,35 @@ class Evaluator
      */
     private function handleFunctionCalculation(Token $token): void
     {
+//        dump('simple cacl', $this->resultStack);
         $number1 = $this->resultStack->pop();
 
         switch ($token->getMatch()) {
             case 'sqrt':
+
                 $result = sqrt($number1);
+//                dump('Result: ' . $result);
                 $this->resultStack->push($result);
                 break;
             case 'sin':
-                // Calculator doesn't take degrees or radiants so we convert it so it calculates properly
+
+                // Calculator doesn't take degrees or radiants, so we convert it, so it calculates properly
                 $result = sin(deg2rad($number1));
+                $this->resultStack->push($result);
+                break;
+            case 'pi':
+                $result = M_PI;
+                // I push the number back because i don't need it ot be calculatd since pi is different from
+                // the other functions
+                $this->resultStack->push($number1);
                 $this->resultStack->push($result);
                 break;
             default:
                 // error
                 break;
         }
+
+//        dump($this->resultStack);  $number1 = $this->resultStack->pop();
     }
 
     /**

@@ -64,11 +64,11 @@ class StandardOperations extends Tokenizer
         $this->add(new Definition('/\)/', TokenType::CLOSE_PARENTHESIS, 0));
 
         //Below precendeces are according to the shunting yard algoritm
-        $this->add(new Definition('/\+/', TokenType::ADDITION_OPERATOR, 2));
-        $this->add(new Definition('/\-/', TokenType::SUBTRACTION_OPERATOR, 2));
-        $this->add(new Definition('/\*/', TokenType::MULTIPLY_OPERATOR, 3));
-        $this->add(new Definition('/\//', TokenType::DIVISION_OPERATOR, 3));
-        $this->add(new Definition('/\^/', TokenType::EXP_OPERATOR, 4));
+        $this->add(new Definition('/\+/', TokenType::ADDITION_OPERATOR, 10));
+        $this->add(new Definition('/\-/', TokenType::SUBTRACTION_OPERATOR, 10));
+        $this->add(new Definition('/\*/', TokenType::MULTIPLY_OPERATOR, 20));
+        $this->add(new Definition('/\//', TokenType::DIVISION_OPERATOR, 20));
+        $this->add(new Definition('/\^/', TokenType::EXP_OPERATOR, 30));
 
         // Postfix operators
         $this->add(new Definition('/\!\!/', TokenType::SEMI_FACTORIAL_OPERATOR, 0));
