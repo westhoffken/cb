@@ -57,12 +57,15 @@ class CalculateController
         // sqrt(50.50*(sqrt(50 * sqrt(50))*50+50-20))
         // 3 + 4 * 2 / (1 - 5) ^ 2
         // 4+18/(9−3)
+        // 20 mod 10 = 0 and it will not be able to calculate
 
         // Map json data to standerd object of php
         // Could have been a bit cleaner and made a requestParse that parses this specific objects
         $requestData = json_decode($request->getContent(), false, 512, JSON_THROW_ON_ERROR);
         try {
             $tokens = $operationsTokenizer->tokenize($requestData->sum);
+//            $tokens = $operationsTokenizer->tokenize('sin 50 * 60');
+
             $resultStack = (new Evaluator($parse->parse($tokens)))->evaluate();
 
             // frontend accepts JSON, because why not

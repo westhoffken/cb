@@ -16,6 +16,18 @@ use App\Exception\NotImplementedException;
 class Evaluator
 {
 
+    // easier and more readable when we need to add more later
+    private const OPERATORS =
+        [
+            TokenType::DIVISION_OPERATOR,
+            TokenType::MULTIPLY_OPERATOR,
+            TokenType::EXP_OPERATOR,
+            TokenType::ADDITION_OPERATOR,
+            TokenType::SUBTRACTION_OPERATOR,
+            TokenType::MODULES
+        ];
+
+
     /**
      * @var OutputStack
      */
@@ -66,24 +78,18 @@ class Evaluator
             } elseif (
                 in_array(
                     $token->getTokenType(),
-                    [
-                        TokenType::DIVISION_OPERATOR,
-                        TokenType::MULTIPLY_OPERATOR,
-                        TokenType::EXP_OPERATOR,
-                        TokenType::ADDITION_OPERATOR,
-                        TokenType::SUBTRACTION_OPERATOR
-                    ],
+                    self::OPERATORS,
                     true
                 )
             ) {
                 // Non numbers need to be pushed as well, but we also calculate them against the last 2
                 // numbers on the stack
 
-
                 // we need two numbers to perform an operations against, lets make sure there are 2
                 if ($this->resultStack->length() <= 1) {
                     throw new MalformedSumException('Malformed sum, cannot perform RPN');
                 }
+
 
                 $this->handleCalculation($token);
 
@@ -93,11 +99,11 @@ class Evaluator
             }
         }
 
-        // The result stack should only have 1 result left and thats the calculated sy
+        // The result stack should only have 1 result left and that's the calculated sy
         if ($this->resultStack->length() !== 1) {
             throw new NoSumException('Sum could not be calculated properly ');
         }
-
+//        dd('test');
         return $this->resultStack->getResult();
     }
 
@@ -122,6 +128,16 @@ class Evaluator
                 $result = sin(deg2rad($number1));
                 $this->resultStack->push($result);
                 break;
+            case 'cos':
+                // Calculator doesn't take degrees or radiants, so we convert it, so it calculates properly
+                $result = cos(deg2rad($number1));
+                $this->resultStack->push($result);
+                break;
+            case 'tan':
+                // Calculator doesn't take degrees or radiants, so we convert it, so it calculates properly
+                $result = tan(deg2rad($number1));
+                $this->resultStack->push($result);
+                break;
             case 'pi':
                 $result = M_PI;
                 // I push the number back because i don't need it ot be calculatd since pi is different from
@@ -129,6 +145,7 @@ class Evaluator
                 $this->resultStack->push($number1);
                 $this->resultStack->push($result);
                 break;
+
             default:
                 throw new NotImplementedException('Math function is not implemented yet');
         }
@@ -141,6 +158,7 @@ class Evaluator
      */
     private function handleCalculation(Token $token): void
     {
+
         $number1 = $this->resultStack->pop();
 
         $number2 = $this->resultStack->pop();
@@ -149,12 +167,10 @@ class Evaluator
         switch ($token->getTokenType()) {
             case TokenType::SUBTRACTION_OPERATOR:
                 $result = $number2 - $number1;
-                dump('Result: ' . $result);
                 $this->resultStack->push($result);
                 break;
             case TokenType::ADDITION_OPERATOR:
                 $result = $number2 + $number1;
-                dump('Result: ' . $result);
                 $this->resultStack->push($result);
                 break;
             case TokenType::DIVISION_OPERATOR:
@@ -163,18 +179,20 @@ class Evaluator
                     throw new \DivisionByZeroError();
                 }
                 $result = $number2 / $number1;
-                dump('Result: ' . $result);
                 $this->resultStack->push($result);
                 break;
             case TokenType::MULTIPLY_OPERATOR:
                 $result = $number2 * $number1;
-                dump('Result: ' . $result);
                 $this->resultStack->push($result);
                 break;
             case TokenType::EXP_OPERATOR:
                 $result = $number2 ** $number1;
-                dump('Result: ' . $result);
                 $this->resultStack->push($result);
+                break;
+            case TokenType::MODULES:
+                //TODO: there is a bug when teh result is 0 it wont push to the stack probably because of some typecastingf issue
+                $result = $number2 % $number1;
+                $this->resultStack->push((float)$result);
                 break;
             default:
                 // I don't expect to ever reach here, but just in case

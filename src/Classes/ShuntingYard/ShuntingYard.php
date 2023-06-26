@@ -39,6 +39,7 @@ class ShuntingYard
      */
     public function shuntingYard(): OutputStack
     {
+
         // loop through all tokens and handle them accordingly
         foreach ($this->tokens as $token) {
 

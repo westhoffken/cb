@@ -20,7 +20,6 @@ final class TokenType
 
     public const CLOSE_PARENTHESIS = 32;
 
-
     public const ADDITION_OPERATOR = 100;
 
     public const SUBTRACTION_OPERATOR = 101;
@@ -35,6 +34,7 @@ final class TokenType
 
     public const SEMI_FACTORIAL_OPERATOR = 105;
 
+    public const MODULES = 106;
 
     public const FUNCTION_NAME = 200;
 

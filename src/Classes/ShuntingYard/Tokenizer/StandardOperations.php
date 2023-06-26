@@ -27,6 +27,7 @@ class StandardOperations extends Tokenizer
 
         $this->add(new Definition('/sqrt/', TokenType::FUNCTION_NAME, 0));
 
+
         $this->add(new Definition('/round/', TokenType::FUNCTION_NAME, 0));
         $this->add(new Definition('/ceil/', TokenType::FUNCTION_NAME, 0));
         $this->add(new Definition('/floor/', TokenType::FUNCTION_NAME, 0));
@@ -75,6 +76,8 @@ class StandardOperations extends Tokenizer
         $this->add(new Definition('/\*/', TokenType::MULTIPLY_OPERATOR, 20));
         $this->add(new Definition('/\//', TokenType::DIVISION_OPERATOR, 20));
         $this->add(new Definition('/\^/', TokenType::EXP_OPERATOR, 30));
+        // Mod is currently not supported with precende
+        $this->add(new Definition('/%/', TokenType::MODULES, 0));
 
         // Postfix operators
         $this->add(new Definition('/\!\!/', TokenType::SEMI_FACTORIAL_OPERATOR, 0));
