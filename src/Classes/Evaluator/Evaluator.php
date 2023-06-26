@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Classes\RPN;
+namespace App\Classes\Evaluator;
 
-use App\Classes\RPN\Stack\ResultStack;
+use App\Classes\Evaluator\Stack\ResultStack;
 use App\Classes\ShuntingYard\Lexer\Token;
 use App\Classes\ShuntingYard\Lexer\TokenType;
 use App\Classes\Stack\OutputStack;

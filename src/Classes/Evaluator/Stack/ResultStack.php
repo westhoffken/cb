@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Classes\RPN\Stack;
+namespace App\Classes\Evaluator\Stack;
 
 
 use App\Classes\ShuntingYard\Lexer\Token;

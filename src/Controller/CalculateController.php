@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 
-use App\Classes\RPN\Evaluator;
+use App\Classes\Evaluator\Evaluator;
 use App\Classes\ShuntingYard\Parser\Parser;
 use App\Classes\ShuntingYard\Tokenizer\StandardOperations;
 use App\Exception\MalformedSumException;
@@ -40,7 +40,6 @@ class CalculateController
 
 
     /**
-     * This framework is MVC!11!!!
      * Make a new route that can handle our sum input.
      * @param Request $request
      * @return JsonResponse
@@ -70,8 +69,8 @@ class CalculateController
             return new JsonResponse(['result' => $resultStack], 200);
         } catch (\Exception $e) {
             // Why not specific exceptions?
-            // we only wish to return the message and all custom exceptiosn extend from exception
-            // Less code and a little less performance maybe
+            // we only wish to return the message and all custom exceptions extend from exception
+            // Less code and, a little less performance maybe
             return new JsonResponse(['result' => $e->getMessage()], 422);
         }
 
